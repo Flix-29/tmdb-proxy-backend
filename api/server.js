@@ -10,6 +10,7 @@ const TMDB_API_URL = "https://api.themoviedb.org/3";
 
 app.get("/api/app", async (req, res) => {
     try {
+        console.log("calling backend");
         const { page } = req.query;
         const response = await axios.get(`${TMDB_API_URL}/discover/movie`, {
             params: {
