@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_API_URL = "https://api.themoviedb.org/3";
 
-app.get("/api/movies", async (req, res) => {
+app.get("/api/app", async (req, res) => {
     try {
         const { page } = req.query;
         const response = await axios.get(`${TMDB_API_URL}/discover/movie`, {
