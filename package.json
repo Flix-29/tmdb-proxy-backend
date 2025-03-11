@@ -15,5 +15,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "next": "^15.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10"
   }
 }
