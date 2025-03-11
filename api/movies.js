@@ -1,32 +1,33 @@
 const axios = require("axios");
+const http = require('http');
 
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const TMDB_API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkY2E2N2NiYWE1MzQxN2M1Y2I5ZTdmNWE3MTc2MTYyNSIsInN1YiI6IjY2NzRhZDY1Y2VlMjkwZGM5NTBmMjBmMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.JyhSyeRsI0bRKIeVboYC_MVH5HNWMK1_AAPz3uP59n0";
 const TMDB_API_URL = "https://api.themoviedb.org/3";
 
-module.exports = async (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
+const server = http.createServer(async (req, res) => {
     if (req.method === "OPTIONS") {
-        return res.status(200).end();
+        return res.end();
     }
 
     try {
         console.log("calling backend");
-        const { page } = req.query;
-        const response = await axios.get(`${TMDB_API_URL}/discover/movie`, {
-            params: {
-                api_key: TMDB_API_KEY,
-                page: page || 1,
-                language: "de-DE",
-                include_adult: false,
-                include_video: false,
-            },
-        });
-        return res.status(200).json(response.data);
+        const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization:
+                    'Bearer '+ TMDB_API_KEY
+            }
+        }
+        const response = await axios.get(`${TMDB_API_URL}/discover/movie`, options);
+        res.end(JSON.stringify(response.data, null, 2));
+        return response;
     } catch (error) {
-        console.error("Error fetching data from TMDB", error);
-        return res.status(500).json({ error: "Failed to fetch data" });
+        res.end();
     }
-};
+});
+
+const port = 3000;
+server.listen(port, () => {
+    console.log(`Node.js HTTP server is running on port ${port}`);
+});
