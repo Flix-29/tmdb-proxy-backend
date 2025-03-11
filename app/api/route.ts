@@ -1,9 +1,16 @@
-import { NextResponse } from "next/server";
+import {NextResponse} from "next/server";
 
 export async function GET() {
     const API_KEY = process.env.TMDB_API_KEY;
     if (!API_KEY) {
-        return NextResponse.json({ error: "API key is missing" }, { status: 500 });
+        return NextResponse.json({error: "API key is missing"}, {
+            status: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            }
+        });
     }
 
     try {
@@ -19,8 +26,20 @@ export async function GET() {
         }
 
         const data = await response.json();
-        return NextResponse.json(data);
+        return new NextResponse(JSON.stringify(data), {
+            status: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            },
+        });
     } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return new NextResponse(JSON.stringify({error: error.message}), {
+            status: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+            },
+        });
     }
 }
