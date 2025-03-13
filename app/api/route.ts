@@ -6,7 +6,7 @@ export async function GET() {
         return NextResponse.json({error: "API key is missing"}, {
             status: 500,
             headers: {
-                "Access-Control-Allow-Origin": "https://movie-tinder.flix29.de, http://localhost:5173",
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
             }
@@ -29,7 +29,7 @@ export async function GET() {
         return new NextResponse(JSON.stringify(data), {
             status: 200,
             headers: {
-                "Access-Control-Allow-Origin": "https://movie-tinder.flix29.de, http://localhost:5173",
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
             }
@@ -38,7 +38,7 @@ export async function GET() {
         return new NextResponse(JSON.stringify({error: error.message}), {
             status: 500,
             headers: {
-                "Access-Control-Allow-Origin": "https://movie-tinder.flix29.de, http://localhost:5173",
+                "Access-Control-Allow-Origin": "*",
             }
         });
     }
