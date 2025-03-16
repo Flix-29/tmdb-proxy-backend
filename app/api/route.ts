@@ -51,14 +51,12 @@ export async function GET(req: Request) {
 
 function getRequestParameters(reqUrl: URL): Filter {
     const include_adult = reqUrl.searchParams.get("include_adult") || "false"
-    const include_video = reqUrl.searchParams.get("include_video") || "false"
     const language = reqUrl.searchParams.get("language") || "en-US"
     const page = reqUrl.searchParams.get("page") || "1"
     const watch_region = reqUrl.searchParams.get("watch_region") || "US"
     const provider = reqUrl.searchParams.getAll("with_watch_providers").map(item => getProviderFromValue(item)) || []
     return {
         include_adult: include_adult === "true",
-        include_video: include_video === "true",
         language: language,
         pageNumber: parseInt(page),
         watch_region: watch_region,
@@ -70,7 +68,6 @@ function applyFilterToRequest(baseUrl: string, filter: Filter): string {
     let requestUrlWithFilter = baseUrl
 
     requestUrlWithFilter += `include_adult=${filter.include_adult}`
-    requestUrlWithFilter += `&include_video=${filter.include_video}`
     requestUrlWithFilter += `&language=${filter.language}`
     requestUrlWithFilter += `&page=${filter.pageNumber}`
     requestUrlWithFilter += `&sort_by=popularity.desc`
