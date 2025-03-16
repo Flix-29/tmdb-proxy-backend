@@ -1,4 +1,6 @@
 import {NextResponse} from "next/server";
+import {Filter} from "../model/Filter";
+import {getProviderFromValue, getProviderId} from "../model/Provider";
 
 export async function GET(req: Request) {
     const API_KEY = process.env.TMDB_API_KEY;
@@ -14,9 +16,10 @@ export async function GET(req: Request) {
     }
 
     try {
-        const url = new URL(req.url);
-        const page = url.searchParams.get("page") || "1";
-        const response = await fetch(`https://api.themoviedb.org/3/discover/movie?page=${page}`, {
+        const reqUrl = new URL(req.url);
+        const filter = getRequestParameters(reqUrl);
+        const url = applyFilterToRequest(`https://api.themoviedb.org/3/discover/movie?`, filter);
+        const response = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
                 "Content-Type": "application/json",
@@ -44,4 +47,42 @@ export async function GET(req: Request) {
             }
         });
     }
+}
+
+function getRequestParameters(reqUrl: URL): Filter {
+    const include_adult = reqUrl.searchParams.get("include_adult") || "false"
+    const include_video = reqUrl.searchParams.get("include_video") || "false"
+    const language = reqUrl.searchParams.get("language") || "en-US"
+    const page = reqUrl.searchParams.get("page") || "1"
+    const watch_region = reqUrl.searchParams.get("watch_region") || "US"
+    const provider = reqUrl.searchParams.getAll("with_watch_providers").map(item => getProviderFromValue(item)) || []
+    return {
+        include_adult: include_adult === "true",
+        include_video: include_video === "true",
+        language: language,
+        pageNumber: parseInt(page),
+        watch_region: watch_region,
+        provider: provider
+    }
+}
+
+function applyFilterToRequest(baseUrl: string, filter: Filter): string {
+    let requestUrlWithFilter = baseUrl
+
+    requestUrlWithFilter += `include_adult=${filter.include_adult}`
+    requestUrlWithFilter += `&include_video=${filter.include_video}`
+    requestUrlWithFilter += `&language=${filter.language}`
+    requestUrlWithFilter += `&page=${filter.pageNumber}`
+    requestUrlWithFilter += `&sort_by=popularity.desc`
+    requestUrlWithFilter += `&watch_region=${filter.watch_region}`
+
+    if (filter.provider != null && filter.provider.length > 0) {
+        requestUrlWithFilter += `&with_watch_providers=`
+        filter.provider.forEach(provider => {
+            requestUrlWithFilter += `${getProviderId(provider).replace(' ', '')}|`
+        })
+        requestUrlWithFilter = requestUrlWithFilter.substring(0, requestUrlWithFilter.length - 1)
+    }
+
+    return requestUrlWithFilter
 }
