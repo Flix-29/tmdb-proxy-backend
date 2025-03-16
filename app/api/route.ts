@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
     const API_KEY = process.env.TMDB_API_KEY;
     if (!API_KEY) {
         return NextResponse.json({error: "API key is missing"}, {
@@ -14,7 +14,9 @@ export async function GET() {
     }
 
     try {
-        const response = await fetch("https://api.themoviedb.org/3/discover/movie", {
+        const url = new URL(req.url);
+        const page = url.searchParams.get("page") || "1";
+        const response = await fetch(`https://api.themoviedb.org/3/discover/movie?page=${page}`, {
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
                 "Content-Type": "application/json",
