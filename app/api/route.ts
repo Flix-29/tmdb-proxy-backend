@@ -2,17 +2,7 @@ import {NextResponse} from "next/server";
 import {Filter} from "../model/Filter";
 import {Logger, pino} from "pino"
 
-const logger: Logger = pino({
-    transport: {
-        target: 'pino-pretty',
-        options: {
-            colorize: true,
-        },
-    },
-    level: process.env.PINO_LOG_LEVEL || 'info',
-
-    redact: [],
-});
+const logger: Logger = pino();
 
 export async function GET(req: Request) {
     logger.info("GET request received");
