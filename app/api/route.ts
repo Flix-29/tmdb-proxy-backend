@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server";
 import {Filter} from "../model/Filter";
-import {getProviderFromValue, getProviderId} from "../model/Provider";
 
 export async function GET(req: Request) {
     const API_KEY = process.env.TMDB_API_KEY;
@@ -54,7 +53,7 @@ function getRequestParameters(reqUrl: URL): Filter {
     const language = reqUrl.searchParams.get("language") || "en-US"
     const page = reqUrl.searchParams.get("page") || "1"
     const watch_region = reqUrl.searchParams.get("watch_region") || "US"
-    const provider = reqUrl.searchParams.getAll("with_watch_providers").map(item => getProviderFromValue(item)) || []
+    const provider = reqUrl.searchParams.get("with_watch_providers") || ""
     return {
         include_adult: include_adult === "true",
         language: language,
@@ -72,14 +71,7 @@ function applyFilterToRequest(baseUrl: string, filter: Filter): string {
     requestUrlWithFilter += `&page=${filter.pageNumber}`
     requestUrlWithFilter += `&sort_by=popularity.desc`
     requestUrlWithFilter += `&watch_region=${filter.watch_region}`
-
-    if (filter.provider != null && filter.provider.length > 0) {
-        requestUrlWithFilter += `&with_watch_providers=`
-        filter.provider.forEach(provider => {
-            requestUrlWithFilter += `${getProviderId(provider).replace(' ', '')}|`
-        })
-        requestUrlWithFilter = requestUrlWithFilter.substring(0, requestUrlWithFilter.length - 1)
-    }
+    requestUrlWithFilter += `&with_watch_providers=${filter.provider}`
 
     return requestUrlWithFilter
 }
