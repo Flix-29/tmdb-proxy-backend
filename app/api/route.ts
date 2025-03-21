@@ -1,9 +1,25 @@
 import {NextResponse} from "next/server";
 import {Filter} from "../model/Filter";
+import {Logger, pino} from "pino"
+
+const logger: Logger = pino({
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            colorize: true,
+        },
+    },
+    level: process.env.PINO_LOG_LEVEL || 'info',
+
+    redact: [],
+});
 
 export async function GET(req: Request) {
+    logger.info("GET request received");
+
     const API_KEY = process.env.TMDB_API_KEY;
     if (!API_KEY) {
+        logger.error("API key is missing");
         return NextResponse.json({error: "API key is missing"}, {
             status: 500,
             headers: {
@@ -18,6 +34,7 @@ export async function GET(req: Request) {
         const reqUrl = new URL(req.url);
         const filter = getRequestParameters(reqUrl);
         const url = applyFilterToRequest(`https://api.themoviedb.org/3/discover/movie?`, filter);
+        logger.info("calling MovieAPI with url: " + url);
         const response = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
@@ -26,7 +43,7 @@ export async function GET(req: Request) {
         });
 
         if (!response.ok) {
-            throw new Error(`API error: ${response.statusText}`);
+            logger.error("API returned an error", response.status);
         }
 
         const data = await response.json();
@@ -39,6 +56,7 @@ export async function GET(req: Request) {
             }
         });
     } catch (error) {
+        logger.error(error.message);
         return new NextResponse(JSON.stringify({error: error.message}), {
             status: 500,
             headers: {
