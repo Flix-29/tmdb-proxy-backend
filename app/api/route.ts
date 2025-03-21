@@ -79,7 +79,7 @@ function applyFilterToRequest(baseUrl: string, filter: Filter): string {
     requestUrlWithFilter += `&page=${filter.pageNumber}`
     requestUrlWithFilter += `&sort_by=popularity.desc`
     requestUrlWithFilter += `&watch_region=${filter.watch_region}`
-    requestUrlWithFilter += `&with_watch_providers=${filter.provider}`
+    requestUrlWithFilter += `&with_watch_providers=${filter.provider.replaceAll("|", "%7C")}`
 
     return requestUrlWithFilter
 }
