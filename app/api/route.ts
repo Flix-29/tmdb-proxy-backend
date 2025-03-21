@@ -36,6 +36,7 @@ export async function GET(req: Request) {
             logger.error("API returned an error", response.status);
         }
 
+        logger.info("Received response:", response.body);
         const data = await response.json();
         return new NextResponse(JSON.stringify(data), {
             status: 200,
