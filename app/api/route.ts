@@ -64,7 +64,6 @@ function getRequestParameters(reqUrl: URL): Filter {
     const watch_region = reqUrl.searchParams.get("watch_region") || "US"
     const provider = reqUrl.searchParams.get("with_watch_providers") || ""
     return {
-        include_adult: include_adult === "true",
         language: language,
         pageNumber: parseInt(page),
         watch_region: watch_region,
@@ -75,7 +74,6 @@ function getRequestParameters(reqUrl: URL): Filter {
 function applyFilterToRequest(baseUrl: string, filter: Filter): string {
     let requestUrlWithFilter = baseUrl
 
-    requestUrlWithFilter += `include_adult=${filter.include_adult}`
     requestUrlWithFilter += `&language=${filter.language}`
     requestUrlWithFilter += `&page=${filter.pageNumber}`
     requestUrlWithFilter += `&sort_by=popularity.desc`
